@@ -1,0 +1,77 @@
+# This .gitignore file is for Unity projects
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Windows-specific files
+*.ini
+*.lnk
+
+# macOS-specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Unity-specific folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+Logs/
+MemoryCaptures/
+
+# Exclude StreamingAssets if not using version control for it
+# Uncomment the next line if you want to exclude StreamingAssets:
+# Assets/StreamingAssets/
+
+# Visual Studio / MonoDevelop / Rider project files
+ExportedObj/
+.consulo/
+.idea/
+*.sln
+*.csproj
+*.unityproj
+*.pidb
+*.userprefs
+*.booproj
+*.suo
+*.tmp
+*.user
+*.vs/
+.vscode/
+*.code-workspace
+
+# Unity generated files
+*.unitypackage
+*.prefab
+*.meta
+
+# Crash files
+sysinfo.txt
+*.stacktrace
+
+# Exclude build artifacts
+*.apk
+*.aab
+*.exe
+*.app
+*.xcodeproj
+*.ipa
+*.dmg
+
+# Asset Bundles
+AssetBundles/
