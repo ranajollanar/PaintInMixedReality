@@ -9,9 +9,7 @@ public class DrawingPen : MonoBehaviour
     [SerializeField] private Transform whiteboard;
     [SerializeField] private float minDistance = 0.01f;
     [SerializeField] private float planeOffset = 0.2f;
-    [SerializeField] private LineRenderer lineRendererPreset;
-    [SerializeField] private LineRenderer lineRendererBlue;
-    [SerializeField] private LineRenderer lineRendererPink;
+    public LineRenderer lineRendererPreset;
     private LineRenderer lineRenderer;
     private List<Vector3> points = new List<Vector3>();
     private List<LineRenderer> drawnLines = new List<LineRenderer>();  // List to track drawn lines
@@ -51,11 +49,21 @@ public class DrawingPen : MonoBehaviour
         }
     }
 
-    public void ChangeLineRendererColor(string colour)
+    public void ChangeLineColor(string colorHex)
     {
-        penColor = colour;
-
+        Color color;
+        if (ColorUtility.TryParseHtmlString(colorHex, out color))
+        {
+            lineRendererPreset.startColor = color;
+            lineRendererPreset.endColor = color;
+        }
+        else
+        {
+            Debug.LogError($"Invalid color hex code: {colorHex}");
+        }
     }
+
+
 
 
     private void UpdateDrawingPlane()
@@ -100,21 +108,8 @@ public class DrawingPen : MonoBehaviour
 
     private void CreateNewLineRenderer()
     {
-        LineRenderer newLineRenderer = null;
-
-        if (penColor == "Black")
-        {
-            newLineRenderer = Instantiate(lineRendererPreset, Vector3.zero, Quaternion.identity);
-        }
-        else if (penColor == "Blue")
-        {
-            newLineRenderer = Instantiate(lineRendererBlue, Vector3.zero, Quaternion.identity);
-        }
-        else if (penColor == "Pink")
-        {
-            newLineRenderer = Instantiate(lineRendererPink, Vector3.zero, Quaternion.identity);
-        }
-
+        LineRenderer newLineRenderer = Instantiate(lineRendererPreset, Vector3.zero, Quaternion.identity);
+        
         lineRenderer = newLineRenderer;
 
         // Parent the line renderer to the whiteboard
