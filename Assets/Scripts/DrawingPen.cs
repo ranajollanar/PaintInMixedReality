@@ -40,7 +40,7 @@ public class DrawingPen : MonoBehaviour
                 isDrawing = true;
             }
 
-            if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], projectedPosition) >= minDistance)
+            if (points.Count == 0 || (Vector3.Distance(points[points.Count - 1], projectedPosition) >= minDistance))
             {
                 AddPoint(projectedPosition);
             }
