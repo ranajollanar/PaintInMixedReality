@@ -9,6 +9,7 @@ public class DrawingPen : MonoBehaviour
     [SerializeField] private Transform whiteboard;
     [SerializeField] private float minDistance = 0.01f;
     [SerializeField] private float planeOffset = 0.2f;
+    [SerializeField] private AudioSource drawingSound;
     public LineRenderer lineRendererPreset;
     private LineRenderer lineRenderer;
     private List<Vector3> points = new List<Vector3>();
@@ -36,6 +37,10 @@ public class DrawingPen : MonoBehaviour
             {
                 CreateNewLineRenderer();
                 isDrawing = true;
+                if (!drawingSound.isPlaying)
+                {
+                    drawingSound.Play();
+                }
             }
 
             if (points.Count == 0 || (Vector3.Distance(points[points.Count - 1], projectedPosition) >= minDistance))
@@ -45,7 +50,16 @@ public class DrawingPen : MonoBehaviour
         }
         else
         {
-            isDrawing = false;
+            if (isDrawing)
+            {
+                isDrawing = false;
+
+                // Stop the drawing sound
+                if (drawingSound.isPlaying)
+                {
+                    drawingSound.Stop();
+                }
+            }
         }
     }
 

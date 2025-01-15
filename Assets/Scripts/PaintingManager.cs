@@ -8,6 +8,7 @@ public class PaintingManager : MonoBehaviour
     [SerializeField] private Transform brush;
     [SerializeField] private Transform can;
     [SerializeField] private Transform pipe;
+    [SerializeField] private ParticleSystem sprayParticles;
 
     private Vector3 penInitialPosition;
     private Vector3 pencilInitialPosition;
@@ -26,20 +27,20 @@ public class PaintingManager : MonoBehaviour
     private void Start()
     {
         // Store initial positions and rotations of the tools
-        penInitialPosition = pen.position;
-        penInitialRotation = pen.rotation;
+        penInitialPosition = pen.localPosition;
+        penInitialRotation = pen.localRotation;
 
-        pencilInitialPosition = pencil.position;
-        pencilInitialRotation = pencil.rotation;
+        pencilInitialPosition = pencil.localPosition;
+        pencilInitialRotation = pencil.localRotation;
 
-        brushInitialPosition = brush.position;
-        brushInitialRotation = brush.rotation;
+        brushInitialPosition = brush.localPosition;
+        brushInitialRotation = brush.localRotation;
 
-        canInitialPosition = can.position;
-        canInitialRotation = can.rotation;
+        canInitialPosition = can.localPosition;
+        canInitialRotation = can.localRotation;
 
-        pipeInitialPosition = pipe.position;
-        pipeInitialRotation = pipe.rotation;
+        pipeInitialPosition = pipe.localPosition;
+        pipeInitialRotation = pipe.localRotation;
     }
 
     private void ResetTransformExcept(Transform active)
@@ -117,12 +118,24 @@ public class PaintingManager : MonoBehaviour
         Color color;
         if (ColorUtility.TryParseHtmlString(colorHex, out color))
         {
-            activeTool.GetComponent<DrawingPen>().lineRendererPreset.startColor = color;
-            activeTool.GetComponent<DrawingPen>().lineRendererPreset.endColor = color;
+            if (activeTool.GetComponent<DrawingPen>())
+            {
+                activeTool.GetComponent<DrawingPen>().lineRendererPreset.startColor = color;
+                activeTool.GetComponent<DrawingPen>().lineRendererPreset.endColor = color;
+            }
+            else
+            {
+                ChangeSprayParticlesColor(color);
+            }
         }
         else
         {
             Debug.LogError($"Invalid color hex code: {colorHex}");
         }
+    }
+
+    private void ChangeSprayParticlesColor(Color color)
+    {
+        sprayParticles.startColor = color;
     }
 }
