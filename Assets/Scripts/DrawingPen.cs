@@ -65,17 +65,24 @@ public class DrawingPen : MonoBehaviour
 
     public void ChangeLineColor(string colorHex)
     {
-        Color color;
-        if (ColorUtility.TryParseHtmlString(colorHex, out color))
+        if (ColorUtility.TryParseHtmlString(colorHex, out Color newColor))
         {
-            lineRendererPreset.startColor = color;
-            lineRendererPreset.endColor = color;
+            // Retrieve the original alpha values
+            float startAlpha = lineRendererPreset.startColor.a;
+            float endAlpha = lineRendererPreset.endColor.a;
+
+            // Assign the new color with the preserved alpha values
+            lineRendererPreset.startColor = new Color(newColor.r, newColor.g, newColor.b, startAlpha);
+            lineRendererPreset.endColor = new Color(newColor.r, newColor.g, newColor.b, endAlpha);
         }
         else
         {
             Debug.LogError($"Invalid color hex code: {colorHex}");
         }
     }
+
+
+
 
 
 

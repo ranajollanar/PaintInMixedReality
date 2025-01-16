@@ -8,7 +8,7 @@ public class SprayCan : MonoBehaviour
     [SerializeField] private GameObject audio;
     [SerializeField] private GameObject canvas;             // The canvas to paint on
     [SerializeField] private float paintStrength = 1.0f;    // Intensity of the paint
-    [SerializeField] private float maxDistance = 5.0f;      // Maximum spray distance
+    [SerializeField] private float paintRadius = 5.0f;      // Radius of the painted area
     [SerializeField] private Texture2D canvasTexture;       // The texture to paint on
     private Color paintColor;
     private Renderer canvasRenderer;
@@ -40,11 +40,6 @@ public class SprayCan : MonoBehaviour
         {
             DeactivateSpray();
         }
-        // Check if spray is active (e.g., button press)
-        if (sprayParticles.isPlaying)
-        {
-            PaintOnCanvas();
-        }
     }
 
     private void ActivateSpray()
@@ -58,27 +53,46 @@ public class SprayCan : MonoBehaviour
         particles.SetActive(false);
         audio.SetActive(false);
     }
-    private void PaintOnCanvas()
-    {
-        if (canvas == null || canvasTexture == null) return;
 
-        // Raycast to detect canvas
-        Ray ray = new Ray(sprayParticles.transform.position, sprayParticles.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, maxDistance))
+    private void OnParticleCollision(GameObject other)
+    {
+        // Ensure collisions are only handled for the canvas
+        if (canvas == null || canvasTexture == null || other != canvas) return;
+
+        // Get collision events
+        List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>();
+        int eventCount = sprayParticles.GetCollisionEvents(canvas, collisionEvents);
+
+        for (int i = 0; i < eventCount; i++)
+        {
+            // Get the collision point in world space
+            Vector3 collisionPoint = collisionEvents[i].intersection;
+
+            // Convert world position to texture UV
+            if (GetTextureUV(collisionPoint, out Vector2 uv))
+            {
+                // Apply paint to the texture at the UV coordinates
+                PaintTexture(uv, paintColor);
+            }
+        }
+    }
+
+    private bool GetTextureUV(Vector3 worldPosition, out Vector2 uv)
+    {
+        uv = Vector2.zero;
+
+        // Use raycasting to find the UV coordinates on the canvas
+        Ray ray = new Ray(worldPosition + Vector3.up * 0.1f, Vector3.down);
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
             if (hit.collider.gameObject == canvas)
             {
-                // Calculate distance-based paint effect
-                float distance = hit.distance;
-                float paintEffect = Mathf.Clamp(1.0f / distance * paintStrength, 0, 1);
-
-                // Convert hit point to texture UV
-                Vector2 uv = hit.textureCoord;
-
-                // Paint the texture
-                PaintTexture(uv, paintColor * paintEffect);
+                uv = hit.textureCoord;
+                return true;
             }
         }
+
+        return false;
     }
 
     private void PaintTexture(Vector2 uv, Color color)
@@ -86,9 +100,26 @@ public class SprayCan : MonoBehaviour
         int x = Mathf.FloorToInt(uv.x * canvasTexture.width);
         int y = Mathf.FloorToInt(uv.y * canvasTexture.height);
 
-        // Apply paint color to the texture
-        canvasTexture.SetPixel(x, y, color);
-        canvasTexture.Apply();
-    }
-}
+        int radius = Mathf.CeilToInt(paintRadius * canvasTexture.width / 10); // Adjust radius for visibility
 
+        // Paint in a radius around the point
+        for (int i = -radius; i <= radius; i++)
+        {
+            for (int j = -radius; j <= radius; j++)
+            {
+                if (i * i + j * j <= radius * radius) // Ensure circular area
+                {
+                    int px = Mathf.Clamp(x + i, 0, canvasTexture.width - 1);
+                    int py = Mathf.Clamp(y + j, 0, canvasTexture.height - 1);
+                    canvasTexture.SetPixel(px, py, color);
+                }
+            }
+        }
+
+        canvasTexture.Apply();
+
+        // Debug log to confirm painting
+        Debug.Log($"Painted at UV: {uv}, Color: {color}, Radius: {radius}");
+    }
+
+}

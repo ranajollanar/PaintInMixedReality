@@ -27,20 +27,20 @@ public class PaintingManager : MonoBehaviour
     private void Start()
     {
         // Store initial positions and rotations of the tools
-        penInitialPosition = pen.localPosition;
-        penInitialRotation = pen.localRotation;
+        penInitialPosition = pen.position;
+        penInitialRotation = pen.rotation;
 
-        pencilInitialPosition = pencil.localPosition;
-        pencilInitialRotation = pencil.localRotation;
+        pencilInitialPosition = pencil.position;
+        pencilInitialRotation = pencil.rotation;
 
-        brushInitialPosition = brush.localPosition;
-        brushInitialRotation = brush.localRotation;
+        brushInitialPosition = brush.position;
+        brushInitialRotation = brush.rotation;
 
-        canInitialPosition = can.localPosition;
-        canInitialRotation = can.localRotation;
+        canInitialPosition = can.position;
+        canInitialRotation = can.rotation;
 
-        pipeInitialPosition = pipe.localPosition;
-        pipeInitialRotation = pipe.localRotation;
+        pipeInitialPosition = pipe.position;
+        pipeInitialRotation = pipe.rotation;
     }
 
     private void ResetTransformExcept(Transform active)
@@ -123,7 +123,7 @@ public class PaintingManager : MonoBehaviour
                 activeTool.GetComponent<DrawingPen>().lineRendererPreset.startColor = color;
                 activeTool.GetComponent<DrawingPen>().lineRendererPreset.endColor = color;
             }
-            else
+            else if (activeTool.GetComponent<SprayCan>())
             {
                 ChangeSprayParticlesColor(color);
             }
